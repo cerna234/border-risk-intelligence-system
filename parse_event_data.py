@@ -1,28 +1,37 @@
+"""
+Border Risk Intelligence System
+"""
+
 import pandas as pd
 import json
 import os
 import numpy as np
-import calendar
+from pathlib import Path
+
+
+#  Load Config File
+
+with open("Configurations/config.json", "r") as f:
+    config = json.load(f)
+
+file_path = Path(config["input_file"])
+schema_key = config["schema_type"]
+present_date_column_name = config["present_date_column_name"]
+month_column_name = config["month_column_name"]
+day_column_name = config["day_column_name"]
+countries_filter = [c.lower() for c in config["countries_filter"]]
+border_coordinates_path = Path(config["border_coordinates_file"])
+output_file = config["output_file"]
 
 
 
+# Import Data
 
-
-
-# Import data
-
-file_path = "//Users//miguelcerna//Desktop//border-risk-intelligence-system//Sample Data//USD 20 Data//MAJIC_Raw_Data_Prio.Org.xlsx"
-
-#determine files extension
-
-extension = os.path.splitext(file_path)[1].lower()
-
-
-if file_path.lower().endswith(".csv"):
+if file_path.suffix.lower() == ".csv":
     df = pd.read_csv(file_path)
     original_data = pd.read_csv(file_path)
 
-elif file_path.lower().endswith((".xlsx", ".xls")):
+elif file_path.suffix.lower() in [".xlsx", ".xls"]:
     df = pd.read_excel(file_path)
     original_data = pd.read_excel(file_path)
 
@@ -30,93 +39,93 @@ else:
     raise ValueError("Unsupported file type")
 
 
+# 
+# standardize column names
 
 
-
-
-
-
-
-
-#standardize columns 
 df.columns = (
     df.columns
-        .str.strip()
-        .str.lower()
-        .str.replace(" ", "_")
+    .str.strip()
+    .str.lower()
+    .str.replace(" ", "_")
 )
 
 
-#convert headers from input data -> expected headers 
-    # this is going to be ahcieved through a mapping schema json file with format
-    # expected : input file column name
+# 4. schema column mapping from present to expected column headers
 
-    #Ex: if column = Summary - Convert name to "Notes"
 
-schema_file_path = "//Users//miguelcerna//Desktop//border-risk-intelligence-system//column_mapping.json"
-with open(schema_file_path, "r") as f:
+with open("Configurations/column_mapping.json", "r") as f:
     schema = json.load(f)
 
-
-column_mapping = schema["column_mapping2"] #specified column mapping from mapping json
-
+column_mapping = schema[schema_key]
 df = df.rename(columns=column_mapping)
 
 
 
-
-#normalize country values column to lower case to avoid case sensitive when filtering
-
-df['country'] = df['country'].str.strip().str.lower()
-
-#Filter data by country (Only for Cambodia and Thailand)
-
-filtered_df = df[df["country"].isin(["cambodia", "thailand"])]
-
-df = filtered_df
+#  filter and normalize by country
 
 
+if "country_name" in df.columns:
+    df["country_name"] = (
+        df["country_name"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+    )
+else:
+    raise ValueError("Expected 'country_name' column not found after schema mapping.")
+
+df = df[df["country_name"].isin(countries_filter)]
 
 
 
-#drop non required columns
+# keep only required columns
 
 columns_to_keep = [
     "event_id",
-    #"event_date", # This will be added later since some data keeps it seperatd by day,month,year
     "year",
     "event_type",
     "actor_1",
     "actor_2",
-    "country",
+    "country_name",
     "fatalities",
     "location",
     "latitude",
     "longitude",
-    #"source", #will be added later
     "notes"
 ]
+
+
 
 df = df[columns_to_keep]
 
 
 
 
+# keep only rows with correct lat, long, and fatalities values
 
 
-# create functions:
-#   add column to add distance from event to Border
-    # Shapefile with lat and long of border value will be closest value from border
+df["latitude"] = pd.to_numeric(df["latitude"], errors="coerce")
+df["longitude"] = pd.to_numeric(df["longitude"], errors="coerce")
+df["fatalities"] = pd.to_numeric(df["fatalities"], errors="coerce")
+
+df = df.dropna(subset=["latitude", "longitude"])
+
+df.loc[df["fatalities"] < 1, "fatalities"] = 0
+df["fatalities"] = df["fatalities"].fillna(0).astype(int)
 
 
-border_coordinates_data = pd.read_csv("//Users//miguelcerna//Desktop//border-risk-intelligence-system//border_coordinates.csv")
+# loading border coordinates from shapefile generated coordinates
 
-border_coordinates_data = border_coordinates_data[['Longitude', 'Latitude']]
-print(border_coordinates_data)
+border_coordinates_data = pd.read_csv(border_coordinates_path)
+border_coordinates_data = border_coordinates_data[["Longitude", "Latitude"]]
+
+border_lats = border_coordinates_data["Latitude"].values
+border_lons = border_coordinates_data["Longitude"].values
 
 
+# calculate distances
 
-# Haversine function
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # Earth radius in km
 
@@ -134,50 +143,22 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * c
 
 
-
-border_lats = border_coordinates_data["Latitude"].values
-border_lons = border_coordinates_data["Longitude"].values
-# Function to compute closest border point + distance
-def closest_border_info(row):
+def closest_border_distance(row):
     distances = haversine(
         row["latitude"],
         row["longitude"],
         border_lats,
         border_lons
     )
-
-    idx = np.argmin(distances)
-
-    return pd.Series({
-        "closest_border_km": distances[idx],
-        #"closest_border_lat": border_lats[idx], Uncomment to validate Data
-        #"closest_border_lon": border_lons[idx] Uncomment to validate Data
-    })
+    return np.min(distances)
 
 
-# Apply to dataframe
-df[[
-    "closest_border_km",
-   # "closest_border_lat", Uncomment to validate Data
-    #"closest_border_lon" Uncomment to validate Data
-]] = df.apply(closest_border_info, axis=1)
+df["closest_border_km"] = df.apply(closest_border_distance, axis=1)
 
 
-#  add column to add distance from event to preah vihar temple
-    # value will be with closest distsnce in km to preah vihar temple
-
-#Temple of Preah Vihear lat,long
+# Temple of Preah Vihear
 temple_lat = 14.3906
 temple_long = 104.6803
-
-distances_to_temple = haversine(
-        temple_lat,
-        temple_long,
-        border_lats,
-        border_lons
-    )
-
-print(distances_to_temple)
 
 df["closest_border_temple_km"] = haversine(
     temple_lat,
@@ -187,48 +168,52 @@ df["closest_border_temple_km"] = haversine(
 )
 
 
+#Create date ony if not present in file already
 
-#remove any columns with blank data or normalize ie Text to numerical values
+def create_date_features():
+    if present_date_column_name in original_data.columns:
 
-#update fatalities under 0 to 0
-df["fatalities"] = pd.to_numeric(df["fatalities"], errors="coerce")
-df.loc[df["fatalities"] < 1, "fatalities"] = 0
-df["fatalities"] = df["fatalities"].fillna(0).astype(int)
+        original_data[present_date_column_name] = pd.to_datetime(
+            original_data[present_date_column_name],
+            errors="coerce"
+        )
 
-
-
-#create event date if not present or seperated values are present
-# ----- CREATE OR USE event_date -----
-
-if "event_date" in original_data.columns:
-
-    # Convert existing event_date to datetime
-    original_data["event_date"] = pd.to_datetime(
-        original_data["event_date"],
-        errors="coerce"
-    )
-
-    # Format as "DEC 10"
-    original_data["month_day"] = (
-        original_data["event_date"]
+        original_data["month_day"] = (
+            original_data[present_date_column_name]
             .dt.strftime("%b %d")
             .str.upper()
-    )
+        )
 
-else:
-    # Build from EMONTH + EDAY
-    original_data["EMONTH"] = pd.to_numeric(original_data["EMONTH"], errors="coerce")
-    original_data["EDAY"] = pd.to_numeric(original_data["EDAY"], errors="coerce")
+    else:
+        original_data[month_column_name] = pd.to_numeric(original_data[month_column_name], errors="coerce")
+        original_data[day_column_name] = pd.to_numeric(original_data[day_column_name], errors="coerce")
 
-    original_data["month_day"] = (
-        original_data["EMONTH"]
-            .apply(lambda x: calendar.month_abbr[int(x)] if pd.notna(x) and 1 <= int(x) <= 12 else "")
+        original_data.loc[original_data[month_column_name] == 0, month_column_name] = np.nan
+        original_data.loc[original_data[day_column_name] == 0, day_column_name] = np.nan
+
+        original_data["month_day"] = (
+            pd.to_datetime(
+                dict(
+                    year=2000,
+                    month=original_data[month_column_name],
+                    day=original_data[day_column_name]
+                ),
+                errors="coerce"
+            )
+            .dt.strftime("%b %d")
             .str.upper()
-        + " "
-        + original_data["EDAY"].astype("Int64").astype(str)
-    )
+        )
 
-# ----- ADD TO FILTERED DF -----
+
+create_date_features()
 
 df["month_day"] = original_data.loc[df.index, "month_day"]
-df.to_csv("output2.csv")
+
+
+# export output
+
+
+df.to_csv(output_file, index=False)
+
+print("Processing complete.")
+print(f"Output saved to: {output_file}")
