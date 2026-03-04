@@ -1,0 +1,61 @@
+{
+    "description": "Left columns in file, right column headers wanted",
+
+  "column_mapping1": {
+    "event_id_cnty": "event_id",
+    "year": "year",
+    "sub_event_type": "event_type",
+    "actor1": "actor_1",
+    "actor2": "actor_2",
+    "country": "country_name",
+    "fatalities": "fatalities",
+    "city": "location",
+    "latitude": "latitude",
+    "longitude": "longitude",
+    "notes": "notes"
+  },
+
+  "column_mapping2": {
+    "eventid": "event_id",
+    "eyear": "year",
+    "elocal": "event_type",
+    "actor1": "actor_1",
+    "actor2": "actor_2",
+    "country": "country_name",
+    "ndeath": "fatalities",
+    "city": "location",
+    "lat": "latitude",
+    "long": "longitude",
+    "summary": "notes"
+  },
+
+
+   "column_mapping3": {
+    "eventid": "event_id",
+    "iyear": "year",
+    "scite1": "event_type",
+    "corp1": "actor_1",
+    "corp2": "actor_2",
+    "country_txt": "country_name",
+    "nkill": "fatalities",
+    "city": "location",
+    "latitude": "latitude",
+    "longitude": "longitude",
+    "summary": "notes"
+  },
+
+
+  "column_mapping4": {
+    "eventid": "event_id",
+    "year": "year",
+    "event_type": "event_type",
+    "actor_1": "actor_1",
+    "actor_2": "actor_2",
+    "country": "country_name",
+    "fatalities": "fatalities",
+    "location": "location",
+    "latitude": "latitude",
+    "longitude": "longitude",
+    "summary": "notes"
+  }
+}

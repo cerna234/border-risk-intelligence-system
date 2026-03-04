@@ -1,0 +1,10 @@
+{
+  "input_file": "Raw_Data\\Thai-Cambodia_Border_Attacks_ISO_Dates.csv",
+  "schema_type": "column_mapping4",
+  "present_date_column_name": "event_date",
+  "month_column_name": "imonth",
+  "day_column_name": "iday",
+  "countries_filter": ["cambodia", "thailand"],
+  "output_file" : "test4.csv",
+  "border_coordinates_file" : "Configurations\\border_coordinates.csv"
+}
