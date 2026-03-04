@@ -1,5 +1,5 @@
 {
-    "description": "Left columns in file, right column headers wanted",
+    "description": "Left columns in file, right column headers wanted (ALL MUST BE LOWER CASE)",
 
   "column_mapping1": {
     "event_id_cnty": "event_id",
@@ -57,5 +57,19 @@
     "latitude": "latitude",
     "longitude": "longitude",
     "summary": "notes"
+  },
+
+  "column_mapping5": {
+    "id": "event_id",
+    "week": "year",
+    "event_type": "event_type",
+    "admin1": "actor_1",
+    "sub_event_type": "actor_2",
+    "country": "country_name",
+    "fatalities": "fatalities",
+    "region": "location",
+    "centroid_latitude": "latitude",
+    "centroid_longitude": "longitude",
+    "disorder_type": "notes"
   }
 }

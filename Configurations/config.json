@@ -1,10 +1,11 @@
 {
-  "input_file": "Raw_Data\\Thai-Cambodia_Border_Attacks_ISO_Dates.csv",
-  "schema_type": "column_mapping4",
-  "present_date_column_name": "event_date",
+  "input_file": "Raw_Data//Asia-Pacific_aggregated_data_up_to-2026-02-14.xlsx",
+  "schema_type": "column_mapping5",
+  "present_date_column_name": "WEEK",
   "month_column_name": "imonth",
   "day_column_name": "iday",
   "countries_filter": ["cambodia", "thailand"],
-  "output_file" : "test4.csv",
-  "border_coordinates_file" : "Configurations\\border_coordinates.csv"
+  "output_file" : "test8.csv",
+  "border_coordinates_file" : "Configurations//border_coordinates.csv",
+  "source_name": "https://www.start.umd.edu/download-global-terrorism-database"
 }

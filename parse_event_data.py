@@ -22,7 +22,7 @@ day_column_name = config["day_column_name"]
 countries_filter = [c.lower() for c in config["countries_filter"]]
 border_coordinates_path = Path(config["border_coordinates_file"])
 output_file = config["output_file"]
-
+data_source = config["source_name"]
 
 
 # Import Data
@@ -209,6 +209,7 @@ create_date_features()
 
 df["month_day"] = original_data.loc[df.index, "month_day"]
 
+df["Source"] = data_source
 
 # export output
 
