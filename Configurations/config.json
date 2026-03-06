@@ -1,10 +1,10 @@
 {
-  "input_file": "Raw_Data\\Thai-Cambodia_Border_Attacks_ISO_Dates.csv",
-  "schema_type": "column_mapping4",
-  "present_date_column_name": "event_date",
+  "input_file": "C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\Raw_Data\\Asia-Pacific_aggregated_data_with_year.xlsx",
+  "schema_type": "column_mapping5",
+  "present_date_column_name": "week",
   "month_column_name": "imonth",
   "day_column_name": "iday",
   "countries_filter": ["cambodia", "thailand"],
-  "output_file" : "test4.csv",
+  "output_file" : "2025-2026-acledData.csv",
   "border_coordinates_file" : "Configurations\\border_coordinates.csv"
 }
