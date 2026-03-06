@@ -65,17 +65,17 @@ df = df.rename(columns=column_mapping)
 #  filter and normalize by country
 
 
-if "country_name" in df.columns:
-    df["country_name"] = (
-        df["country_name"]
+if "country" in df.columns:
+    df["country"] = (
+        df["country"]
         .astype(str)
         .str.strip()
         .str.lower()
     )
 else:
-    raise ValueError("Expected 'country_name' column not found after schema mapping.")
+    raise ValueError("Expected 'country' column not found after schema mapping.")
 
-df = df[df["country_name"].isin(countries_filter)]
+df = df[df["country"].isin(countries_filter)]
 
 
 
@@ -87,7 +87,7 @@ columns_to_keep = [
     "event_type",
     "actor_1",
     "actor_2",
-    "country_name",
+    "country",
     "fatalities",
     "location",
     "latitude",
