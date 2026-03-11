@@ -21,7 +21,7 @@ from pathlib import Path
 # Reads runtime parameters such as input file path,
 # schema selection, filtering options, and output location.
 
-with open("Configurations/config.json", "r") as f:
+with open("C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\Configurations\config.json", "r") as f:
     config = json.load(f)
 
 file_path = Path(config["input_file"])
@@ -62,7 +62,7 @@ df.columns = (
 # Renames dataset columns according to the selected
 # schema defined in column_mapping.json.
 
-with open("Configurations/column_mapping.json", "r") as f:
+with open("C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\Configurations\\column_mapping.json", "r") as f:
     schema = json.load(f)
 
 column_mapping = schema[schema_key]

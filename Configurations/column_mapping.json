@@ -66,7 +66,7 @@
     "event_type": "event_type",
     "actor_1": "actor_1",
     "actor_2": "actor_2",
-    "country": "country",
+    "country_name": "country",
     "fatalities": "fatalities",
     "location": "location",
     "latitude": "latitude",

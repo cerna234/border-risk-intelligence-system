@@ -15,6 +15,7 @@ import seaborn as sns
 import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
+from datetime import datetime
 # from sklearn.preprocessing import MinMaxScaler  # kept for variation testing
 # from sklearn.decomposition import PCA  # optional dimensionality reduction (testing)
 
@@ -27,13 +28,8 @@ from sklearn.preprocessing import StandardScaler
 # Consider moving to config file later if productionizing
 
 df = pd.read_csv(
-    r"C:\Users\Miguel Cerna\OneDrive\Desktop\border-risk-intelligence-system\ML_Model\Model Input Data\acledDataParse(Allyears).csv"
+    r"C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\data\\processed\\ProcessedData(Current_Event).csv"
 )
-
-# Clean whitespace from actor fields to prevent encoding mismatches
-
-df["actor_1"] = df["actor_1"].astype(str).str.strip()
-df["actor_2"] = df["actor_2"].astype(str).str.strip()
 
 
 # Select features for clustering
@@ -95,7 +91,7 @@ plt.show()
 
 # Apply DBSCAN clustering
 
-db = DBSCAN(eps=0.9, min_samples=10)
+db = DBSCAN(eps=1.2, min_samples=7)
 clusters = db.fit_predict(X_final)
 
 df["cluster"] = clusters
@@ -106,9 +102,9 @@ n_noise = np.sum(labels == -1)
 
 
 #output for testing
-#print("clusters:", n_clusters)
-#print("noise points:", n_noise)
-#print("total points:", len(labels))
+print("clusters:", n_clusters)
+print("noise points:", n_noise)
+print("total points:", len(labels))
 
 
 # Export clustered output
@@ -116,7 +112,9 @@ n_noise = np.sum(labels == -1)
 # Output used for ArcGIS spatial visualization and
 # escalation momentum mapping
 
+timestamp = datetime.now().strftime("%Y-%m-%d_%H%M")
 
-df.to_csv("clustered_output_Escalation_Momentum(AllYears).csv", index=False)
+
+df.to_csv(f"C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\data\\model_output_data\\model_output_data(current_Event_{timestamp}).csv", index=False)
 
 print("\nClustered dataset exported successfully.")
