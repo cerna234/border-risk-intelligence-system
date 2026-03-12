@@ -60,17 +60,17 @@
   },
   
   "column_mapping5": {
-    "event_id": "event_id",
-    "event_date": "event_date",
+    "id": "event_id",
+    "week": "event_date",
     "year": "year",
     "event_type": "event_type",
-    "actor_1": "actor_1",
-    "actor_2": "actor_2",
+    "admin1": "actor_1",
+    "events": "actor_2",
     "country_name": "country",
     "fatalities": "fatalities",
-    "location": "location",
-    "latitude": "latitude",
-    "longitude": "longitude",
-    "notes": "notes"
+    "region": "location",
+    "centroid_latitude": "latitude",
+    "centroid_longitude": "longitude",
+    "disorder_type": "notes"
   }
 }

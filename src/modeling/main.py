@@ -28,7 +28,7 @@ from datetime import datetime
 # Consider moving to config file later if productionizing
 
 df = pd.read_csv(
-    r"C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\data\\processed\\ProcessedData(Current_Event).csv"
+    r"/Users/miguelcerna/Desktop/border-risk-intelligence-system/data/processed/ProcessedData(Current_Event).csv"
 )
 
 
@@ -40,7 +40,8 @@ numeric_features = [
     "y_km",
     "events_last_30_days_in_area",
     "events_last_90_days_in_area",
-    "days_since_last_event_in_area"
+    "days_since_last_event_in_area",
+    "closest_border_temple_km"
 ]
 
 X_numeric = df[numeric_features]
@@ -91,7 +92,7 @@ plt.show()
 
 # Apply DBSCAN clustering
 
-db = DBSCAN(eps=1.2, min_samples=7)
+db = DBSCAN(eps=1.2, min_samples=4)
 clusters = db.fit_predict(X_final)
 
 df["cluster"] = clusters
@@ -115,6 +116,6 @@ print("total points:", len(labels))
 timestamp = datetime.now().strftime("%Y-%m-%d_%H%M")
 
 
-df.to_csv(f"C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\data\\model_output_data\\model_output_data(current_Event_{timestamp}).csv", index=False)
+df.to_csv(f"//Users//miguelcerna//Desktop//border-risk-intelligence-system//data//model_output_data//model_output_data(current_Event_{timestamp}).csv", index=False)
 
 print("\nClustered dataset exported successfully.")

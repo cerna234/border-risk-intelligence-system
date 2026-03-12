@@ -1,0 +1,20 @@
+{
+  "acled": {
+    "battles": 5,
+    "explosions/remote violence": 4,
+    "violence against civilians": 4,
+    "riots": 3,
+    "protests": 2,
+    "strategic developments": 2
+  },
+  "border_custom": {
+    "military offensive": 5,
+    "battle": 5,
+    "airstrike": 4,
+    "artillery strike": 4,
+    "skirmish": 3,
+    "protest": 2,
+    "troop movement": 2,
+    "civilian movement": 1
+  }
+}

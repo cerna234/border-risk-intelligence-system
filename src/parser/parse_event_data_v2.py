@@ -21,7 +21,7 @@ from pathlib import Path
 # Reads runtime parameters such as input file path,
 # schema selection, filtering options, and output location.
 
-with open("C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\Configurations\config.json", "r") as f:
+with open("//Users//miguelcerna//Desktop//border-risk-intelligence-system//Configurations//config.json", "r") as f:
     config = json.load(f)
 
 file_path = Path(config["input_file"])
@@ -62,7 +62,7 @@ df.columns = (
 # Renames dataset columns according to the selected
 # schema defined in column_mapping.json.
 
-with open("C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\Configurations\\column_mapping.json", "r") as f:
+with open("//Users//miguelcerna//Desktop//border-risk-intelligence-system//Configurations//column_mapping.json", "r") as f:
     schema = json.load(f)
 
 column_mapping = schema[schema_key]
@@ -123,6 +123,61 @@ df = df.dropna(subset=["latitude", "longitude"])
 
 df.loc[df["fatalities"] < 1, "fatalities"] = 0
 df["fatalities"] = df["fatalities"].fillna(0).astype(int)
+
+
+
+
+# Load Severity Mapping Configuration
+# Allows dynamic switching between severity schemas
+
+with open("//Users//miguelcerna//Desktop//border-risk-intelligence-system//Configurations//severity_mapping.json", "r") as f:
+    severity_schemas = json.load(f)
+
+severity_schema_key = config.get("severity_schema")
+
+if not severity_schema_key:
+    raise ValueError("No 'severity_schema' specified in config.json")
+
+if severity_schema_key not in severity_schemas:
+    raise ValueError(
+        f"Severity schema '{severity_schema_key}' not found in severity_mapping.json"
+    )
+
+event_severity_map = severity_schemas[severity_schema_key]
+
+
+# ----------------------------------------------------------------
+# Compute Event Severity
+# Formula: event_type_weight + 2 if fatalities > 0
+# ----------------------------------------------------------------
+
+# Normalize event_type text for reliable matching
+df["event_type"] = (
+    df["event_type"]
+    .astype(str)
+    .str.strip()
+    .str.lower()
+)
+
+# Map event types to base severity scores
+df["event_type_score"] = df["event_type"].map(event_severity_map)
+
+# Warn if unmapped event types exist
+unmapped_types = df[df["event_type_score"].isna()]["event_type"].unique()
+
+if len(unmapped_types) > 0:
+    print("Warning: Unmapped event types detected:")
+    print(unmapped_types)
+
+# Default unmapped types to 1 (lowest severity)
+df["event_type_score"] = df["event_type_score"].fillna(1)
+
+# Apply final severity formula
+df["severity"] = (
+    df["event_type_score"] +
+    np.where(df["fatalities"] > 0, 2, 0)
+)
+
 
 
 # Define Haversine distance function
@@ -188,28 +243,18 @@ df["closest_border_temple_km"] = haversine(
 )
 
 
-# Parse and standardize event dates
-# Attempts direct parsing first. If unsuccessful for many
-# rows, combines event_date with year field.
+# Parse and validate event dates
+# Requires event_date to already contain full date information.
 
-
-df["event_date_parsed"] = pd.to_datetime(
+df["event_date"] = pd.to_datetime(
     df["event_date"],
     errors="coerce"
 )
 
-if df["event_date_parsed"].isna().mean() > 0.5:
-    df["event_date_parsed"] = pd.to_datetime(
-        df["event_date"].astype(str).str.strip() + " " + df["year"].astype(str),
-        errors="coerce"
-    )
+if df["event_date"].isna().any():
+    raise ValueError("Some event_date values could not be parsed. Ensure full date format is provided.")
 
-
-df = df.dropna(subset=["event_date_parsed"])
-df["event_date"] = df["event_date_parsed"]
-df = df.drop(columns=["event_date_parsed"])
-
-START_YEAR = 2003
+START_YEAR = 2000
 END_YEAR = 2026
 
 df = df[

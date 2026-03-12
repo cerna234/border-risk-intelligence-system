@@ -1,10 +1,11 @@
 {
-  "input_file": "C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\data\\raw\\Thai-Cambodia Border Attacks Dataset.xlsx",
+  "input_file": "//Users//miguelcerna//Desktop//border-risk-intelligence-system//data//raw//Thai-Cambodia Border Attacks Dataset.xlsx",
   "schema_type": "column_mapping5",
   "present_date_column_name": "event_date",
   "month_column_name": "imonth",
   "day_column_name": "iday",
   "countries_filter": ["cambodia", "thailand"],
-  "output_file" : "C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\data\\processed\\ProcessedData(Current_Event).csv",
-  "border_coordinates_file" : "C:\\Users\\Miguel Cerna\\OneDrive\\Desktop\\border-risk-intelligence-system\\Configurations\\border_coordinates.csv"
+  "output_file" : "//Users//miguelcerna//Desktop/border-risk-intelligence-system//data//processed//events Data(With Severity).csv",
+  "border_coordinates_file" : "//Users//miguelcerna//Desktop//border-risk-intelligence-system//Configurations//border_coordinates.csv",
+  "severity_schema": "border_custom"
 }
