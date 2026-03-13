@@ -254,7 +254,7 @@ df["event_date"] = pd.to_datetime(
 if df["event_date"].isna().any():
     raise ValueError("Some event_date values could not be parsed. Ensure full date format is provided.")
 
-START_YEAR = 2000
+START_YEAR = 2024
 END_YEAR = 2026
 
 df = df[

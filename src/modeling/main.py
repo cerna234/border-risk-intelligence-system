@@ -28,7 +28,7 @@ from datetime import datetime
 # Consider moving to config file later if productionizing
 
 df = pd.read_csv(
-    r"/Users/miguelcerna/Desktop/border-risk-intelligence-system/data/processed/ProcessedData(Current_Event).csv"
+    r"/Users/miguelcerna/Desktop/border-risk-intelligence-system/data/processed/Combined Acled+Team_Data_Processed.csv"
 )
 
 
@@ -116,6 +116,6 @@ print("total points:", len(labels))
 timestamp = datetime.now().strftime("%Y-%m-%d_%H%M")
 
 
-df.to_csv(f"//Users//miguelcerna//Desktop//border-risk-intelligence-system//data//model_output_data//model_output_data(current_Event_{timestamp}).csv", index=False)
+df.to_csv(f"//Users//miguelcerna//Desktop//border-risk-intelligence-system//data//model_output_data//model_output_data({timestamp}).csv", index=False)
 
 print("\nClustered dataset exported successfully.")
