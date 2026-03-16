@@ -26,3 +26,35 @@ The result was an end-to-end intelligence workflow:
 data ingestion → structured parsing → feature engineering → density-based clustering → geospatial visualization → analytical interpretation
 
 This project demonstrates how spatial-temporal modeling can transform raw event data into interpretable escalation insights within a national security context.
+
+
+**Correlation Matrix**
+This matrix visualizes relationships between the engineered spatial and temporal features used in the DBSCAN clustering model. Variables include spatial location, recent event activity, distance to the border and the Preah Vihear Temple area, and calculated event severity. These relationships help identify which factors contribute most strongly to escalation patterns along the Thai–Cambodian border.
+![Correaltion Matrix](data/images/Correlation_Matrix.png)
+
+
+
+**High-Risk Cluster Identification**
+
+This visualization highlights one of the primary clusters identified by the DBSCAN model. The Sa Kaeo–Banteay Meanchey and Surin–Oddar Meanchey regions display high concentrations of severe events and fatalities. The density and severity of events within these regions indicate a higher probability of future border clashes compared to other areas along the border.
+
+![Cluster 2 Mapping](data/images/Cluster_2_Analysis.png)
+
+
+
+
+**Severity-Based Incident Mapping**
+
+Conflict events were assigned a severity score based on event type and casualty presence. Military offensives and battles were weighted as the highest severity events, while lower-impact activities such as troop movements or protests received lower scores. Events involving casualties received an additional severity modifier. Mapping these scores allows high-risk locations to be visually distinguished from lower-intensity incidents.
+
+![Severity Scaling](data/images/Data_Mapped_with_Severity_Scaling.png)
+
+
+
+
+**Spatial clusters identified**
+This map shows all spatial clusters identified by the DBSCAN algorithm along the Thai–Cambodian border. The model groups events occurring in close geographic proximity while filtering isolated incidents as noise. Cluster analysis revealed two primary escalation hotspots: the Sa Kaeo–Banteay Meanchey region and the Surin–Oddar Meanchey region. These areas exhibited both higher event frequency and greater severity, suggesting an elevated likelihood of renewed conflict escalation.
+![All Clusters on map](data/images/Clusters_On_Map_Image_with_Legend.png)
+
+
+
